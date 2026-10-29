@@ -1,0 +1,38 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - lempnet
+
+  php:
+      build: ./php
+      volumes:
+        - ./www:/var/www/html
+      networks:
+        - lempnet
+      
+  mysql:
+      image: mysql:8.0
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      volumes:
+       - db_data:/var/lib/mysql
+      networks:
+       - lempnet
+
+volumes:
+  db_data:
+
+networks:
+  lempnet:
